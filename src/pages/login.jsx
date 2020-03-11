@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import withStyles from "@material-ui/core/styles/withStyles";
 import PropTypes from "prop-types";
 import AppIcon from "../images/icon.png";
-import axios from "axios";
 import { Link } from "react-router-dom";
 
 import Grid from "@material-ui/core/Grid";
@@ -11,33 +10,12 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
-const styles = {
-  form: {
-    textAlign: "center"
-  },
-  image: {
-    margin: "20px auto"
-  },
-  pageTitle: {
-    margin: "10px auto"
-  },
-  textField: {
-    margin: "10px auto"
-  },
-  button: {
-    marginTop: 20,
-    marginBottom: 20,
-    position: "relative"
-  },
-  customError: {
-    color: "red",
-    fontSize: "0.8rem",
-    marginTop: 10
-  },
-  progress: {
-    position: "absolute"
-  }
-};
+import { connect } from "react-redux";
+import { loginUser } from "../redux/actions/userActions";
+
+const styles = (theme) => ({
+  ...theme.spreadThis
+});
 
 export class login extends Component {
   constructor() {
@@ -45,35 +23,17 @@ export class login extends Component {
     this.state = {
       email: "",
       password: "",
-      loading: false,
       errors: {}
     };
   }
 
   handleSubmit = (event) => {
     event.preventDefault();
-    this.setState({
-      loading: true
-    });
     const userData = {
       email: this.state.email,
       password: this.state.password
     };
-    axios
-      .post("/login", userData)
-      .then((result) => {
-        console.log(result.data);
-        this.setState({
-          loading: false
-        });
-        this.props.history.push("/");
-      })
-      .catch((err) => {
-        this.setState({
-          errors: err.response.data,
-          loading: false
-        });
-      });
+    this.props.loginUser(userData, this.props.history);
   };
 
   handleChange = (event) => {
@@ -82,8 +42,11 @@ export class login extends Component {
     });
   };
   render() {
-    const { classes } = this.props;
-    const { errors, loading } = this.state;
+    const {
+      classes,
+      UI: { loading }
+    } = this.props;
+    const { errors } = this.state;
     return (
       <Grid container className={classes.form}>
         <Grid item sm />
@@ -147,7 +110,22 @@ export class login extends Component {
 }
 
 login.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
+  loginUser: PropTypes.func.isRequired,
+  user: PropTypes.object.isRequired,
+  UI: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(login);
+const mapStateToProps = (state) => ({
+  user: state.user,
+  UI: state.UI
+});
+
+const mapActionsToProps = {
+  loginUser
+};
+
+export default connect(
+  mapStateToProps,
+  mapActionsToProps
+)(withStyles(styles)(login));

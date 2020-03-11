@@ -1,0 +1,22 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "firefox",
+            "request": "launch",
+            "name": "Launch firefox against localhost",
+            "clearConsoleOnReload": true,
+            "reloadOnChange": {
+                "watch": "${workspaceFolder}/**/*.jsx",
+                "ignore": "**/node_modules/**"
+            },
+            "url": "http://localhost:3000",
+            "webRoot": "${workspaceFolder}",
+            "skipFiles": [
+                "<node_internals>/**/*.js",
+                "${workspaceFolder}/node_modules/**/*.js",
+                "${workspaceFolder}/lib/**/*.js"
+            ]
+        }
+    ]
+}
